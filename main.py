@@ -95,7 +95,6 @@ class Game(Frame):
         self.problemtime = 5.0
         self.smallBubbleSize = 50
         self.bigBubbleSize = 200
-        self.answerBoxSize = 75
         Frame.__init__(self)
         self.master.title("Just a Math Game")
         self.grid()
@@ -108,6 +107,11 @@ class Game(Frame):
         self.master.bind('<Up>', lambda event: self.upAns(self))  # guess up key answer
         self.master.bind('<Down>', lambda event: self.downAns(self))  # guess down key answer
         self.master.bind('<Return>', lambda event: self.returnEvent())  # guess down key answer
+        self.answerBoxSize = 75
+        self.upImg = PhotoImage(file='upImg.png')
+        self.downImg = PhotoImage(file='downImg.png')
+        self.leftImg = PhotoImage(file='leftImg.png')
+        self.rightImg = PhotoImage(file='rightImg.png')
         self.drawMenu()
 
     def drawMenu(self):
@@ -160,8 +164,11 @@ class Game(Frame):
                 updateGamePanel()
                 problemTimer()
 
-        def displayProblem():
+        def displayProblem(problem, answer, optionArr):
             # Display the problem here
+            self.canvas.create_text((self.canvas_width*.5, self.canvas_height*.4), text=problem, font=("Arial", 30), tags='problem')
+            self.canvas.create_image(self.canvas_width*.2, self.canvas_height*.7, image=self.upImg, tags='problem')
+
 
         def genProblem():
             x = random.randint(1, 99)
@@ -183,7 +190,7 @@ class Game(Frame):
                 optionArr = [ans, ans+random.randint(-20, 20),  ans+random.randint(-20, 20),  ans+random.randint(-20, 20)]
             optionArr.sort()
 
-            displayProblem(problem, optionArr)
+            displayProblem(problem, ans, optionArr)
             problemTimer()
 
         if self.onInstructions:
