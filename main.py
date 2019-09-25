@@ -89,12 +89,17 @@ class Game(Frame):
         self.onMenu = False
         self.onInstructions = False
         self.onGame = False
+        self.onProblem = False
         self.menuItems = []
         self.instructionsItems = []
         self.score = 0
         self.problemtime = 5.0
         self.smallBubbleSize = 50
         self.bigBubbleSize = 200
+        self.problem = ""
+        self.ansSubmitted = ""
+        self.answer = 0
+        self.optionArr = []
         Frame.__init__(self)
         self.master.title("Just a Math Game")
         self.grid()
@@ -113,6 +118,60 @@ class Game(Frame):
         self.leftImg = PhotoImage(file='leftImg.png')
         self.rightImg = PhotoImage(file='rightImg.png')
         self.drawMenu()
+
+    # Check if the selected answer is right by comparing currentAnswer to the index of the selection in answerOptions
+    # answerOptions = [leftOption, rightOption, upOption, downOption]
+    @staticmethod
+    def upAns(self):
+        print('up')
+        if self.optionArr[0] == self.answer:
+            # Correct
+            print("correct")
+            if self.problemtime > 0:
+                self.score += 1
+        else:
+            # Wrong
+            print("wrong")
+        self.ansSubmitted = "1"
+
+    @staticmethod
+    def rightAns(self):
+        print('right')
+        if self.optionArr[1] == self.answer:
+            # Correct
+            print("correct")
+            if self.problemtime > 0:
+                self.score += 1
+        else:
+            # Wrong
+            print("wrong")
+        self.ansSubmitted = "1"
+            
+    @staticmethod
+    def leftAns(self):
+        print('left')
+        if self.optionArr[2] == self.answer:
+            # Correct
+            print("correct")
+            if self.problemtime > 0:
+                self.score += 1
+        else:
+            # Wrong
+            print("wrong")
+        self.ansSubmitted = "1"
+
+    @staticmethod
+    def downAns(self):
+        print('down')
+        if self.optionArr[3] == self.answer:
+            # Correct
+            print("correct")
+            if self.problemtime > 0:
+                self.score += 1
+        else:
+            # Wrong
+            print("wrong")
+        self.ansSubmitted = "1"
 
     def drawMenu(self):
         self.canvas.create_rectangle(self.canvas_width*.35, self.canvas_height*.3, self.canvas_width*.65, self.canvas_height*.5, tags='mainMenu')
@@ -155,8 +214,13 @@ class Game(Frame):
             self.onGame = True
 
         def problemTimer():
+            if self.ansSubmitted != "":
+                self.ansSubmitted = ""
+                genProblem()
             if self.problemtime < .1:
                 updateGamePanel()
+                self.problemtime = 5.0
+                genProblem()
             else:
                 self.problemtime -= .1
                 self.canvas.update()
@@ -164,33 +228,57 @@ class Game(Frame):
                 updateGamePanel()
                 problemTimer()
 
-        def displayProblem(problem, answer, optionArr):
+        def displayProblem():
+            # If there is a problem already displayed we need to remove it first
+            if self.onProblem:
+                self.canvas.delete('problem')
             # Display the problem here
-            self.canvas.create_text((self.canvas_width*.5, self.canvas_height*.4), text=problem, font=("Arial", 30), tags='problem')
-            self.canvas.create_image(self.canvas_width*.2, self.canvas_height*.7, image=self.upImg, tags='problem')
-
+            self.canvas.create_text((self.canvas_width*.5, self.canvas_height*.4), text=self.problem, font=("Arial", 30), tags='problem')
+            # Display option A
+            self.canvas.create_image(self.canvas_width*.35, self.canvas_height*.7, image=self.upImg, tags='problem')
+            self.canvas.create_text((self.canvas_width*.35, self.canvas_height*.8), text=str(self.optionArr[0]), font=("Arial", 30), tags='problem')
+            # Display option B
+            self.canvas.create_image(self.canvas_width*.45, self.canvas_height*.7, image=self.rightImg, tags='problem')
+            self.canvas.create_text((self.canvas_width*.45, self.canvas_height*.8), text=str(self.optionArr[1]), font=("Arial", 30), tags='problem')
+            # Display option C
+            self.canvas.create_image(self.canvas_width*.55, self.canvas_height*.7, image=self.leftImg, tags='problem')
+            self.canvas.create_text((self.canvas_width*.55, self.canvas_height*.8), text=str(self.optionArr[2]), font=("Arial", 30), tags='problem')
+            # Display option D
+            self.canvas.create_image(self.canvas_width*.65, self.canvas_height*.7, image=self.downImg, tags='problem')
+            self.canvas.create_text((self.canvas_width*.65, self.canvas_height*.8), text=str(self.optionArr[3]), font=("Arial", 30), tags='problem')
+            self.onProblem = True
 
         def genProblem():
-            x = random.randint(1, 99)
-            y = random.randint(1, 99)
+            self.problemtime = 5.0
+            updateGamePanel()
+            x = 0
+            y = 0
             type = random.randint(1, 3)
             problem = ""
             optionArr = []
             if type == 1:
+                x = random.randint(1, 50)
+                y = random.randint(1, 50)
                 ans = x+y
                 problem = str(x) + "+" + str(y)
                 optionArr = [ans, ans+random.randint(-20, 20),  ans+random.randint(-20, 20),  ans+random.randint(-20, 20)]
             if type == 2:
+                x = random.randint(1, 50)
+                y = random.randint(1, 50)
                 ans = x-y
                 problem = str(x) + "-" + str(y)
                 optionArr = [ans, ans+random.randint(-20, 20),  ans+random.randint(-20, 20),  ans+random.randint(-20, 20)]
             if type == 3:
+                x = random.randint(1, 10)
+                y = random.randint(1, 10)
                 ans = x*y
                 problem = str(x) + "x" + str(y)
                 optionArr = [ans, ans+random.randint(-20, 20),  ans+random.randint(-20, 20),  ans+random.randint(-20, 20)]
             optionArr.sort()
-
-            displayProblem(problem, ans, optionArr)
+            self.problem = problem
+            self.answer = ans
+            self.optionArr = optionArr
+            displayProblem()
             problemTimer()
 
         if self.onInstructions:
@@ -214,37 +302,8 @@ class Game(Frame):
         if self.onMenu:
             self.startGame()
 
-    # Check if the selected answer is right by comparing currentAnswer to the index of the selection in answerOptions
-    # answerOptions = [leftOption, rightOption, upOption, downOption]
-'''
-    @staticmethod
-    def leftAns(event):
-        if answerOptions[0] == currentAnswer:
-            #correct
-        else:
-            #wrong
 
-    @staticmethod
-    def rightAns(event):
-        if answerOptions[1] == currentAnswer:
-            #correct
-        else:
-            #wrong
 
-    @staticmethod
-    def upAns(event):
-        if answerOptions[2] == currentAnswer:
-            #correct
-        else:
-            #wrong
-
-    @staticmethod
-    def downAns(event):
-        if answerOptions[3] == currentAnswer:
-            #correct
-        else:
-            #wrong
-'''
 
 def main():
     Game().mainloop()
