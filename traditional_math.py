@@ -7,8 +7,8 @@ A series of cognitive games built using Python
 
 """
 from tkinter import *
-import time
 import random
+import grapher
 
 
 class Game(Frame):
@@ -30,6 +30,7 @@ class Game(Frame):
         self.numProblems = 20
         self.optionArr = []
         self.avgtimeArr = []
+        self.graphArr = [[], [], []] # X -> 0, Y -> 1, T/F -> 2
         Frame.__init__(self)
         self.master.title("PyIQ - Traditional Math")
         self.grid()
@@ -49,43 +50,34 @@ class Game(Frame):
         self.rightImg = PhotoImage(file='rightImg.png')
         self.drawMenu()
 
-    # Check if the selected answer is right by comparing currentAnswer to the index of the selection in answerOptions
-    # answerOptions = [leftOption, rightOption, upOption, downOption]
-    @staticmethod
-    def upAns(self):
+    def checkAnswer(self, num):
         if not self.finishedGame:
-            if self.optionArr[0] == self.answer:
+            self.graphArr[0].append(self.problemNumber)
+            self.graphArr[1].append(5-self.problemtime)
+            if self.optionArr[num] == self.answer:
                 # Correct
                 if self.problemtime > 0:
                     self.score += 1
+                    self.graphArr[2].append(1)
+            else:
+                self.graphArr[2].append(0)
             self.ansSubmitted = "1"
+
+    @staticmethod
+    def upAns(self):
+        self.checkAnswer(0)
 
     @staticmethod
     def rightAns(self):
-        if not self.finishedGame:
-            if self.optionArr[1] == self.answer:
-                # Correct
-                if self.problemtime > 0:
-                    self.score += 1
-            self.ansSubmitted = "1"
+        self.checkAnswer(1)
 
     @staticmethod
     def leftAns(self):
-        if not self.finishedGame:
-            if self.optionArr[2] == self.answer:
-                # Correct
-                if self.problemtime > 0:
-                    self.score += 1
-            self.ansSubmitted = "1"
+        self.checkAnswer(2)
 
     @staticmethod
     def downAns(self):
-        if not self.finishedGame:
-            if self.optionArr[3] == self.answer:
-                # Correct
-                if self.problemtime > 0:
-                    self.score += 1
-            self.ansSubmitted = "1"
+        self.checkAnswer(3)
 
     def drawMenu(self):
         self.canvas.create_rectangle(self.canvas_width * .35, self.canvas_height * .3, self.canvas_width * .65,
@@ -179,6 +171,8 @@ class Game(Frame):
                 avgtime = avgtime / len(self.avgtimeArr)
                 self.canvas.create_text((self.canvas_width * .5, self.canvas_height * .6),
                                         text="Average Time per Question: " + str("{0:.1f}".format(avgtime)) + " seconds", font=("Arial", 18), tags='scorePanel')
+                print(self.graphArr)
+                grapher.ScatterPlot(self.graphArr[0], self.graphArr[1], self.graphArr[2])
                 self.finishedGame = True
 
         def displayProblem():
