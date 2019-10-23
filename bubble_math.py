@@ -1,71 +1,55 @@
-class Bubble():
-    """Class for bubble objects"""
+from tkinter import *
+import random
+import bubble
 
-    def __init__(self, id, x, y, x2, y2, value):
-        """each bubble object has these values associated with it"""
-        self.x = x
-        self.y = y
-        self.x2 = x2
-        self.y2 = y2
-        self.id = id
-        self.value = value
+class Game(Frame):
 
-    def getX(self):
-        """returns x1 of tkinter shape"""
-        return self.x
+    def __init__(self):
+        self.onMenu = False
+        self.onInstructions = False
+        self.onGame = False
+        self.onProblem = False
+        self.menuItems = []
+        self.instructionsItems = []
+        self.score = 0
+        self.problemtime = 5.0
+        self.smallBubbleSize = 50
+        self.bigBubbleSize = 200
+        self.problem = ""
+        self.ansSubmitted = ""
+        self.answer = 0
+        self.optionArr = []
+        Frame.__init__(self)
+        self.master.title("Bubble Math")
+        self.grid()
+        self.canvas_width = 1366
+        self.canvas_height = 702
+        self.canvas = Canvas(self, width=self.canvas_width, height=self.canvas_height, bg="white")
+        self.canvas.grid(row=1, column=0)
+        self.master.bind('<Left>', lambda event: self.leftAns(self))  # guess left key answer
+        self.master.bind('<Right>', lambda event: self.rightAns(self))  # guess right key answer
+        self.master.bind('<Up>', lambda event: self.upAns(self))  # guess up key answer
+        self.master.bind('<Down>', lambda event: self.downAns(self))  # guess down key answer
+        self.master.bind('<Return>', lambda event: self.returnEvent())  # guess down key answer
+        self.answerBoxSize = 75
+        self.upImg = PhotoImage(file='upImg.png')
+        self.downImg = PhotoImage(file='downImg.png')
+        self.leftImg = PhotoImage(file='leftImg.png')
+        self.rightImg = PhotoImage(file='rightImg.png')
+        self.genBubble()
 
-    def getY(self):
-        """returns y1 of tkinter shape"""
-        return self.y
+    def drawBubble(self, genbub):
+        rect1 = self.canvas.create_oval(genbub.getX(), genbub.getY(), genbub.getX2(), genbub.getY2())
+        y = genbub.getY()
+        print(y)
 
-    def getX2(self):
-        """returns x2 pos of tkinter shape"""
-        return self.x2
+    def genBubble(self):
+        genbub = bubble.Bubble(1, 50, 50, 100, 100, 20)
+        self.drawBubble(genbub)
 
-    def getY2(self):
-        """returns y2 of tkinter shape"""
-        return self.y2
 
-    def getID(self):
-        """returns unique object identifier"""
-        return self.id
 
-    def getValue(self):
-        """returns value of the bubble"""
-        return self.value
+def main():
+    Game().mainloop()
 
-class Choice():
-    """Class for choice objects"""
-
-    def __init__(self, id, x, y, x2, y2, value):
-        """each choice object has these values associated with it"""
-        self.x = x
-        self.y = y
-        self.x2 = x2
-        self.y2 = y2
-        self.id = id
-        self.value = value
-
-    def getX(self):
-        """returns x1 of tkinter shape"""
-        return self.x
-
-    def getY(self):
-        """returns y1 of tkinter shape"""
-        return self.y
-
-    def getX2(self):
-        """returns x2 pos of tkinter shape"""
-        return self.x2
-
-    def getY2(self):
-        """returns y2 of tkinter shape"""
-        return self.y2
-
-    def getID(self):
-        """returns unique object identifier"""
-        return self.id
-
-    def getValue(self):
-        """returns answer the object represents"""
-        return self.value
+main()
